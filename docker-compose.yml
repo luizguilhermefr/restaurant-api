@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  web:
+    image: restaurant
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: python manage.py runserver
+    env_file: .env
+    volumes:
+      - .:/app:z
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  db:
+    image: "postgres:10-alpine"
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+    hostname: postgres
+    environment:
+      - POSTGRES_DB=restaurant
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - PGPASSWORD=postgres
+
+volumes:
+  postgresql_data:

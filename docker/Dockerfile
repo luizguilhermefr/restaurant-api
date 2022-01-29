@@ -2,7 +2,7 @@ FROM python:3.9-alpine3.14
 
 RUN adduser -D mainuser
 
-RUN apk add --update --no-cache postgresql-dev g++ gcc
+RUN apk add --update --no-cache postgresql-dev g++ gcc jpeg-dev zlib-dev libjpeg
 
 WORKDIR /app
 

@@ -85,11 +85,15 @@ def seed_menu_items(apps, schema_editor):
     ]
 
     MenuItem = apps.get_model("menu", "MenuItem")
+    Category = apps.get_model("menu", "Category")
+    Image = apps.get_model("menu", "Image")
     for item in items:
+        image = Image.objects.get(name=item["image_id"])
+        category = Category.objects.get(id=item["category_id"])
         MenuItem.objects.create(
             id=item["id"],
-            image_id=item["image_id"],
-            category_id=item["category_id"],
+            image=image,
+            category=category,
             name=item["name"],
             price=item["price"],
         )
@@ -103,7 +107,7 @@ def clear_menu_items(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("menu", "0002_seed_menu_categories"),
+        ("menu", "0003_seed_menu_categories"),
     ]
 
     operations = [

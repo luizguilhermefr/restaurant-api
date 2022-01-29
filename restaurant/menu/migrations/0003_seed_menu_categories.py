@@ -11,10 +11,10 @@ def seed_menu_categories(apps, schema_editor):
     ]
 
     Category = apps.get_model("menu", "Category")
+    Image = apps.get_model("menu", "Image")
     for category in categories:
-        Category.objects.create(
-            id=category["id"], image_id=category["image_id"], name=category["name"]
-        )
+        image = Image.objects.get(name=category["image_id"])
+        Category.objects.create(id=category["id"], image=image, name=category["name"])
 
 
 def clear_menu_categories(apps, schema_editor):
@@ -25,7 +25,7 @@ def clear_menu_categories(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("menu", "0001_initial"),
+        ("menu", "0002_seed_menu_images"),
     ]
 
     operations = [

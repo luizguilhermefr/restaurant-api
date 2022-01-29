@@ -2,20 +2,26 @@
 
 ## Setup
 
+Before you start, setup the `.env` file. You can simply compy the available example:
+
+```shell script
+cp .env.sample .env
+```
+
 First of all, build the project image:
 
 ```shell script
-docker compose build
+make build
 ```
 
-Then run the migrations:
+Then, to run the server:
 
 ```shell script
-./run.sh python manage.py migrate
+make run
 ```
 
-To run the server:
+And to run the database migrations:
 
 ```shell script
-./run.sh python manage.py runserver
+make migrate
 ```

@@ -25,3 +25,9 @@ And to run the database migrations:
 ```shell script
 make migrate
 ```
+
+To run the tests:
+
+```shell script
+make test
+```

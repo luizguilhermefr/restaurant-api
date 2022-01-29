@@ -5,16 +5,16 @@ from django.db import migrations
 
 def seed_menu_categories(apps, schema_editor):
     categories = [
-        {"id": 1, "image_id": "f3fbf57b118fa9", "name": "Bakery"},
-        {"id": 2, "image_id": "b271afbefdc554", "name": "Entrees"},
-        {"id": 3, "image_id": "eba73b2361fae3", "name": "Drinks"},
+        {"image_id": "f3fbf57b118fa9", "name": "Bakery"},
+        {"image_id": "b271afbefdc554", "name": "Entrees"},
+        {"image_id": "eba73b2361fae3", "name": "Drinks"},
     ]
 
     Category = apps.get_model("menu", "Category")
     Image = apps.get_model("menu", "Image")
     for category in categories:
         image = Image.objects.get(name=category["image_id"])
-        Category.objects.create(id=category["id"], image=image, name=category["name"])
+        Category.objects.create(image=image, name=category["name"])
 
 
 def clear_menu_categories(apps, schema_editor):

@@ -23,14 +23,15 @@ class MenuItemSerializer(serializers.ModelSerializer):
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
-    menu_item = OrderMenuItemField()
+    item = OrderMenuItemField()
+    price = serializers.DecimalField(read_only=True, max_digits=10, decimal_places=2)
 
     class Meta:
         model = OrderItem
-        fields = ("menu_item", "quantity")
+        fields = ("item", "quantity", "price")
 
 
-class OrderSerializer(serializers.ModelSerializer):
+class OrderWriteSerializer(serializers.ModelSerializer):
     credit_card_number = serializers.CharField(
         min_length=16, max_length=16, write_only=True
     )
@@ -77,7 +78,10 @@ class OrderSerializer(serializers.ModelSerializer):
         order = Order.objects.create(payment=payment)
         for item in validated_data["items"]:
             OrderItem.objects.create(
-                order=order, quantity=item["quantity"], item=item["menu_item"]
+                order=order,
+                quantity=item["quantity"],
+                item=item["item"],
+                price=item["item"].price,
             )
 
         return order
@@ -90,4 +94,21 @@ class OrderSerializer(serializers.ModelSerializer):
             "credit_card_exp_date",
             "items",
             "confirmation",
+        )
+
+
+class OrderListSerializer(serializers.ModelSerializer):
+    payment_confirmation = serializers.UUIDField(
+        source="payment.confirmation", allow_null=True
+    )
+    items = OrderItemSerializer(many=True)
+
+    class Meta:
+        model = Order
+        fields = (
+            "id",
+            "created_at",
+            "payment_confirmation",
+            "total",
+            "items",
         )

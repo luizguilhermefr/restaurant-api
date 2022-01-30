@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 
 
@@ -26,8 +28,17 @@ class Order(models.Model):
     payment = models.ForeignKey(Payment, null=True, on_delete=models.SET_NULL)
     created_at = models.DateField(auto_now_add=True)
 
+    @property
+    def total(self):
+        total = 0
+        for item in OrderItem.objects.filter(order=self).all():
+            total += item.price * item.quantity
+
+        return Decimal(total)
+
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
     item = models.ForeignKey(MenuItem, on_delete=models.PROTECT)
     quantity = models.PositiveIntegerField(default=1)
+    price = models.DecimalField(max_digits=10, decimal_places=2)

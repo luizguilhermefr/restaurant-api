@@ -5,7 +5,10 @@ from django.urls import reverse
 from rest_framework import status
 
 from restaurant.menu.models import Order, OrderItem
-from restaurant.menu.tests.factories import MenuItemFactory
+from restaurant.menu.tests.factories import (
+    MenuItemFactory,
+    OrderItemFactory,
+)
 
 pytestmark = pytest.mark.django_db
 
@@ -42,8 +45,8 @@ class TestOrderViewSet:
                 "credit_card_cvv": "445",
                 "credit_card_exp_date": "05/28",
                 "items": [
-                    {"menu_item": coffee.id, "quantity": 2},
-                    {"menu_item": cake.id, "quantity": 1},
+                    {"item": coffee.id, "quantity": 2},
+                    {"item": cake.id, "quantity": 1},
                 ],
             }
         )
@@ -66,14 +69,14 @@ class TestOrderViewSet:
                 "credit_card_cvv": "445",
                 "credit_card_exp_date": "05/28",
                 "items": [
-                    {"menu_item": 12345566, "quantity": 1},
+                    {"item": 12345566, "quantity": 1},
                 ],
             }
         )
 
         response = client.post(url, data=post_data, content_type="application/json")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
-        assert response.data == {"items": {0: {"menu_item": ["Item does not exist."]}}}
+        assert response.data == {"items": {0: {"item": ["Item does not exist."]}}}
 
     @pytest.mark.parametrize(
         "credit_card_number,error_expected",
@@ -94,7 +97,7 @@ class TestOrderViewSet:
                 "credit_card_cvv": "445",
                 "credit_card_exp_date": "05/28",
                 "items": [
-                    {"menu_item": product.id, "quantity": 1},
+                    {"item": product.id, "quantity": 1},
                 ],
             }
         )
@@ -122,7 +125,7 @@ class TestOrderViewSet:
                 "credit_card_cvv": "445",
                 "credit_card_exp_date": credit_card_exp_date,
                 "items": [
-                    {"menu_item": product.id, "quantity": 1},
+                    {"item": product.id, "quantity": 1},
                 ],
             }
         )
@@ -150,7 +153,7 @@ class TestOrderViewSet:
                 "credit_card_cvv": credit_card_cvv,
                 "credit_card_exp_date": "12/28",
                 "items": [
-                    {"menu_item": product.id, "quantity": 1},
+                    {"item": product.id, "quantity": 1},
                 ],
             }
         )
@@ -158,3 +161,20 @@ class TestOrderViewSet:
         response = client.post(url, data=post_data, content_type="application/json")
         assert response.status_code == status.HTTP_400_BAD_REQUEST
         assert response.data == {"credit_card_cvv": [error_expected]}
+
+    def test_lists_orders(self, url, client):
+        OrderItemFactory.create(quantity=2, price=15)
+        response = client.get(url)
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+
+        fields_to_expect_orders = (
+            "id",
+            "created_at",
+            "payment_confirmation",
+            "total",
+            "items",
+        )
+
+        for order in response.data:
+            assert all(field in order for field in fields_to_expect_orders)

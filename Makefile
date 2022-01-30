@@ -1,3 +1,6 @@
+.PHONY: all test clean
+
+
 build:
 	docker compose build
 

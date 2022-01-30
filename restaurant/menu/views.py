@@ -6,20 +6,22 @@ from restaurant.menu.serializers import (
     OrderWriteSerializer,
     OrderListSerializer,
 )
+from restaurant.utils import CsrfExemptSessionAuthentication
 
 
-class MenuItemViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+class BaseViewSet(viewsets.GenericViewSet):
+    authentication_classes = (CsrfExemptSessionAuthentication,)
+
+
+class MenuItemViewSet(BaseViewSet, mixins.ListModelMixin):
     permission_classes = ()
     authentication_classes = ()
     serializer_class = MenuItemSerializer
     queryset = MenuItem.objects.all()
 
 
-class OrderViewSet(
-    viewsets.GenericViewSet, mixins.CreateModelMixin, mixins.ListModelMixin
-):
+class OrderViewSet(BaseViewSet, mixins.CreateModelMixin, mixins.ListModelMixin):
     permission_classes = ()
-    authentication_classes = ()
     queryset = Order.objects.all()
 
     def get_serializer_class(self):

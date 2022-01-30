@@ -5,7 +5,7 @@ from django.db import transaction
 from rest_framework import serializers
 
 from restaurant.menu.fields import OrderMenuItemField
-from restaurant.menu.models import MenuItem, Image, Order, OrderItem, Payment
+from restaurant.menu.models import MenuItem, Image, Order, OrderItem, Payment, Category
 
 
 class ImageSerializer(serializers.ModelSerializer):
@@ -14,12 +14,21 @@ class ImageSerializer(serializers.ModelSerializer):
         fields = ("src",)
 
 
-class MenuItemSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     image = ImageSerializer()
 
     class Meta:
+        model = Category
+        fields = ("id", "name", "image")
+
+
+class MenuItemSerializer(serializers.ModelSerializer):
+    image = ImageSerializer()
+    category = CategorySerializer()
+
+    class Meta:
         model = MenuItem
-        fields = ("id", "name", "price", "image")
+        fields = ("id", "name", "price", "image", "category")
 
 
 class OrderItemSerializer(serializers.ModelSerializer):

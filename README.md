@@ -1,5 +1,9 @@
 # restaurant-api
 
+## Requirements
+
+- Docker 20.10.11
+
 ## Setup
 
 Before you start, setup the `.env` file. You can simply compy the available example:
